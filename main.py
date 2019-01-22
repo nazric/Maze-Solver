@@ -3,12 +3,12 @@ from graphics import *
 import random
 
 
-factor = 10
+square_size = 10
 
 
 def main():
-    rand = generate_maze(150, 80, (1, 1), (149, 1))
-    draw_maze(rand)
+    rand = generate_maze(80, 60, (1, 1), (79, 59))
+    # draw_maze(rand)
     path = []
     solve(rand, rand.start, path)
     print(path)
@@ -18,9 +18,10 @@ def main():
 
 def generate_maze(length, width, start, end):
     maze = Maze(np.zeros((width + 1, length + 1), dtype=bool), start, end)
+    draw_maze(maze)
     maze.set_free((1, 1))
+    draw_square(maze,(1,1),"white")
     walls = []
-    maze.visit((1, 1))
     add_walls(maze, walls, (1, 1))
 
     while len(walls) > 0:
@@ -32,7 +33,9 @@ def generate_maze(length, width, start, end):
         if maze.in_matrix(passage):
             if maze.is_free(wall[1]) ^ (maze.is_free(passage)):
                 maze.set_free(wall[0])
+                draw_square(maze, wall[0], "white")
                 maze.set_free(passage)
+                draw_square(maze, passage, "white")
                 add_walls(maze, walls, passage)
         walls.pop(wall_ind)
 
@@ -52,10 +55,10 @@ def add_walls(maze, wall_list, point):
 
 def draw_maze(maze):
     if maze.win is None:
-        maze.win = GraphWin("Maze", factor * maze.width, factor * maze.length)
+        maze.win = GraphWin("Maze", square_size * maze.width, square_size * maze.length)
     for i in range(0, maze.width):
         for j in range(0, maze.length):
-            r = Rectangle(Point(factor * i, factor * j), Point(factor * (i + 1), factor * (j + 1)))
+            r = Rectangle(Point(square_size * i, square_size * j), Point(square_size * (i + 1), square_size * (j + 1)))
             if maze.is_free((i, j)):
                 r.setFill("white")
                 r.setOutline("white")
@@ -69,8 +72,8 @@ def draw_maze(maze):
 
 def draw_square(maze, pos, colour):
     if maze.win is None:
-        maze.win = GraphWin("Maze", factor * maze.width, factor * maze.length)
-    r = Rectangle(Point(factor * pos[0], factor * pos[1]), Point(factor * (pos[0] + 1) - 1, factor * (pos[1] + 1) - 1))
+        maze.win = GraphWin("Maze", square_size * maze.width, square_size * maze.length)
+    r = Rectangle(Point(square_size * pos[0], square_size * pos[1]), Point(square_size * (pos[0] + 1) - 1, square_size * (pos[1] + 1) - 1))
     r.setFill(colour)
     r.setOutline(colour)
     r.draw(maze.win)
