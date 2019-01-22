@@ -4,11 +4,11 @@ import random
 
 
 square_size = 10
+delays_on = False
 
 
 def main():
-    rand = generate_maze(80, 60, (1, 1), (79, 59))
-    # draw_maze(rand)
+    rand = generate_maze(100, 60, (1, 1), (99, 59))
     path = []
     solve(rand, rand.start, path)
     print(path)
@@ -18,29 +18,32 @@ def main():
 
 def generate_maze(length, width, start, end):
     maze = Maze(np.zeros((width + 1, length + 1), dtype=bool), start, end)
-    draw_maze(maze)
+    draw_blank_maze(maze)
     maze.set_free((1, 1))
     draw_square(maze,(1,1),"white")
     walls = []
     add_walls(maze, walls, (1, 1))
+    last = None
 
     while len(walls) > 0:
-        # draw_maze(maze)
+        if delays_on:
+            time.sleep(0.003)
         wall_ind = int(random.randrange(0, len(walls)))
         wall = walls[wall_ind]
         diff = (wall[0][0] - wall[1][0], wall[0][1] - wall[1][1])
         passage = (wall[0][0] + diff[0], wall[0][1] + diff[1])
         if maze.in_matrix(passage):
             if maze.is_free(wall[1]) ^ (maze.is_free(passage)):
+                if last is not None:
+                    draw_square(maze, last, "white")
                 maze.set_free(wall[0])
                 draw_square(maze, wall[0], "white")
                 maze.set_free(passage)
-                draw_square(maze, passage, "white")
+                draw_square(maze, passage, "red")
                 add_walls(maze, walls, passage)
+                last = passage
         walls.pop(wall_ind)
-
-    maze.set_free((maze.width - 2, maze.length - 2))
-    maze.reset_visited()
+    draw_square(maze, last, "white")
     return maze
 
 
@@ -66,8 +69,15 @@ def draw_maze(maze):
                 r.setFill("black")
                 r.setOutline("black")
             r.draw(maze.win)
-    # maze.win.getMouse()  # Pause to view result
-    # maze.win.close()  # Close window when done
+
+
+def draw_blank_maze(maze):
+    if maze.win is None:
+        maze.win = GraphWin("Maze", square_size * maze.width, square_size * maze.length)
+    r = Rectangle(Point(0,0), Point(square_size * maze.width, square_size * maze.length))
+    r.setFill("black")
+    r.setOutline("black")
+    r.draw(maze.win)
 
 
 def draw_square(maze, pos, colour):
@@ -80,6 +90,8 @@ def draw_square(maze, pos, colour):
 
 
 def solve(maze, curr, path):
+    if delays_on:
+        time.sleep(0.03)
     maze.visit(curr)
     draw_square(maze, curr, "red")
     if curr == maze.end:
@@ -96,6 +108,8 @@ def solve(maze, curr, path):
                     if good:
                         path.insert(0, curr)
                         return True
+    if delays_on:
+        time.sleep(0.03)
     draw_square(maze, curr, "blue")
 
 
