@@ -8,6 +8,7 @@ delays_on = False
 
 
 def main():
+    random.seed()
     rand = generate_maze(100, 60, (1, 1), (99, 59))
     path = []
     solve(rand, rand.start, path)
@@ -98,16 +99,16 @@ def solve(maze, curr, path):
         path.insert(0, curr)
         return True
     else:
-        for i in range(-1, 2):
-            for j in range(-1, 2):
-                check = (curr[0] + i, curr[1] + j)
-                if check[0] == curr[0] or check[1] == curr[1]:
-                    good = False
-                    if maze.in_matrix(check) and maze.is_free(check) and not maze.is_visited(check):
-                        good = solve(maze, check, path)
-                    if good:
-                        path.insert(0, curr)
-                        return True
+        index_offset = [(-1,0), (0,-1), (1,0), (0,1)]
+        random.shuffle(index_offset)
+        for offset in index_offset:
+            check = (curr[0] + offset[0], curr[1] + offset[1])
+            good = False
+            if maze.in_matrix(check) and maze.is_free(check) and not maze.is_visited(check):
+                good = solve(maze, check, path)
+            if good:
+                path.insert(0, curr)
+                return True
     if delays_on:
         time.sleep(0.03)
     draw_square(maze, curr, "blue")
