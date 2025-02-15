@@ -6,3 +6,11 @@ Needs a lot of clean up, but is functional. Changes to some of the parameters in
 Uses a <a href="https://en.wikipedia.org/wiki/Maze_generation_algorithm#Randomized_Prim's_algorithm">Randomized Prim's Algorithm</a> for maze generation
 
 Uses a <a href="https://en.wikipedia.org/wiki/Depth-first_search">Depth-First Search</a> for solving
+
+To run:
+```
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+python3 main.py
+```
